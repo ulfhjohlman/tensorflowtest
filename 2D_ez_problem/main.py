@@ -9,7 +9,7 @@ BATCH_SIZE = 10
 LEARNING_RATE = 0.1
 HIDDEN_1 = 4
 HIDDEN_2 = 2
-TRAINING_ITTERATIONS = 100
+TRAINING_ITTERATIONS = 1000
 STD = 2
 
 def gen_data():
@@ -132,14 +132,16 @@ def training(data,targets):
                   input_pl,
                   target_pl,
                   data, targets)
+          """
           # Evaluate against the test set.
           print('Test Data Eval:')
+          data, targets = gen_data()
           do_eval(sess,
                   eval_correct,
                   input_pl,
                   target_pl,
                   data, targets)
-                    """
+                    
     return
 
 if __name__ == '__main__':
