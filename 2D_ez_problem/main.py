@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import math
+import matplotlib.pyplot as plt
 
 N_DATA = 100 # from both A&B
 N_CLASSES = 2
@@ -10,7 +11,7 @@ LEARNING_RATE = 0.1
 HIDDEN_1 = 4
 HIDDEN_2 = 2
 TRAINING_ITTERATIONS = 1000
-STD = 2
+STD = 0.2
 
 def gen_data():
     theta = np.random.rand(N_DATA).astype(np.float32) * 2 * math.pi
@@ -109,7 +110,7 @@ def training(data,targets):
     optimizer = tf.train.GradientDescentOptimizer(LEARNING_RATE)
     global_step = tf.Variable(0, name='global_step', trainable=False)
     train_op = optimizer.minimize(lossfunc, global_step=global_step)
-    eval_correct = tf.reduce_sum(tf.cast(tf.nn.in_top_k(logits, target_pl, 1), tf.int32))
+
 
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
@@ -119,6 +120,7 @@ def training(data,targets):
         _, loss_value = sess.run([train_op, lossfunc], feed_dict=feed_dict)
         if (i + 1) % 1000 == 0 or (i + 1) == TRAINING_ITTERATIONS:
           # Evaluate against the training set.
+          eval_correct = tf.reduce_sum(tf.cast(tf.nn.in_top_k(logits, target_pl, 1), tf.int32))
           print('Training Data Eval:')
           do_eval(sess,
                   eval_correct,
@@ -141,9 +143,21 @@ def training(data,targets):
                   input_pl,
                   target_pl,
                   data, targets)
-                    
+
+    return
+
+def plot(data,targets):
+    from mpl_toolkits.mplot3d import Axes3D
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    class1 = targets==0
+    class2 = targets==1
+    ax.scatter(data[class1,0],data[class1,1],data[class1,2],c = 'r')
+    ax.scatter(data[class2,0],data[class2,1],data[class2,2],c = 'b')
+    plt.show()
     return
 
 if __name__ == '__main__':
     data, targets = gen_data()
     training(data,targets)
+    plot(data,targets)
